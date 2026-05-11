@@ -20,12 +20,12 @@
 | Server | Apache Tomcat (hoặc tương thích) |
 
 ## 📁 Cấu trúc thư mục dự án
-├── TV1_Database # Script SQL tạo database và bảng
-├── TV2_Transaction # Xử lý nghiệp vụ thêm/sửa/xóa giao dịch
-├── TV3_Statistic # Logic thống kê và tổng hợp số liệu
-├── TV4_Frontend # Giao diện người dùng (CSS, HTML, images)
-├── TV5_JS_Chart # Mã JavaScript vẽ biểu đồ (thong-ke-chart.js)
-└── README.md # Hướng dẫn này
+├── TV1_Database # Script SQL tạo database và bảng|
+├── TV2_Transaction # Xử lý nghiệp vụ thêm/sửa/xóa giao dịch|
+├── TV3_Statistic # Logic thống kê và tổng hợp số liệu|
+├── TV4_Frontend # Giao diện người dùng (CSS, HTML, images)|
+├── TV5_JS_Chart # Mã JavaScript vẽ biểu đồ (thong-ke-chart.js)|
+└── README.md # Hướng dẫn này|
 📖 Cách sử dụng cơ bản
 Đăng nhập / Đăng ký (nếu có module người dùng) hoặc sử dụng mặc định.
 
