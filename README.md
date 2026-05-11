@@ -13,10 +13,10 @@
 
 | Thành phần | Công nghệ |
 |-----------|------------|
-| Backend | Java (Servlet/JSP hoặc Spring MVC) |
+| Backend | Java (Servlet/JSP) |
 | Frontend | HTML5, CSS3, JavaScript |
 | Biểu đồ | Chart.js |
-| Cơ sở dữ liệu | MySQL / MariaDB |
+| Cơ sở dữ liệu | SQLSEVER /|
 | Server | Apache Tomcat (hoặc tương thích) |
 
 ## 📁 Cấu trúc thư mục dự án
