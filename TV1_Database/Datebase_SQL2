@@ -1,0 +1,14 @@
+QLchitieucanhan2.sql
+USE ExpenseManagement;
+GO
+
+SELECT 
+    t.transaction_id, 
+    u.username AS [Tài khoản], 
+    c.category_name AS [Hạng mục], 
+    t.amount AS [Số tiền], 
+    t.transaction_date AS [Ngày], 
+    t.note AS [Ghi chú]
+FROM Transactions t
+JOIN Users u ON t.user_id = u.user_id
+JOIN Categories c ON t.category_id = c.category_id
