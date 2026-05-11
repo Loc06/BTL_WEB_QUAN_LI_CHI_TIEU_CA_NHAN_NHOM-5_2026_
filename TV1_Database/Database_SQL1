@@ -1,0 +1,185 @@
+QLchitieucanhan.sql
+USE ExpenseManagement;
+GO
+
+DROP TABLE IF EXISTS Transactions;
+DROP TABLE IF EXISTS Categories;
+DROP TABLE IF EXISTS Users;
+
+GO
+
+
+-- 1. USERS 
+CREATE TABLE Users (
+    user_id INT IDENTITY(1,1) PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    CONSTRAINT CHK_Email CHECK (email LIKE '%@%')
+);
+
+
+-- 2. CATEGORIES 
+CREATE TABLE Categories (
+    category_id INT IDENTITY(1,1) PRIMARY KEY,
+    category_name NVARCHAR(100) NOT NULL
+);
+
+
+-- 3. TRANSACTIONS 
+CREATE TABLE Transactions (
+    transaction_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL,
+    category_id INT NOT NULL,
+    type NVARCHAR(10) NOT NULL, 
+    amount DECIMAL(18,2) NOT NULL,
+    transaction_date DATETIME NOT NULL DEFAULT GETDATE(),
+    note NVARCHAR(255),
+
+    CONSTRAINT CHK_TransactionType CHECK (type IN (N'Thu', N'Chi')),
+    CONSTRAINT CHK_Amount CHECK (amount > 0),
+
+    CONSTRAINT FK_User_Transaction FOREIGN KEY (user_id)
+        REFERENCES Users(user_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_Category_Transaction FOREIGN KEY (category_id)
+        REFERENCES Categories(category_id)
+);
+
+
+INSERT INTO Users (username, password, email) VALUES 
+('hieu_trinh', 'hieu123', 'hieu.trinh@gmail.com'),
+('khoi_mai', 'khoi2005', 'khoi.mai@gmail.com'),
+('son_nguyen', 'son123', 'son.nguyen@gmail.com'),
+('anh_hoang', 'anh1403', 'anh.hoang@gmail.com'), 
+('loc_duong', 'loc36', 'loc.duong@gmail.com'); 
+
+
+INSERT INTO Categories (category_name) VALUES  
+(N'Thu nhập'),                                     -- id: 1
+(N'Tiết kiệm'),                                    -- id: 2
+(N'Ăn uống'),                                      -- id: 3
+(N'Sinh hoạt (Hóa đơn + điện nước + internet...)'), -- id: 4
+(N'Mua sắm'),                                      -- id: 5
+(N'Giải trí'),                                     -- id: 6
+(N'Khác');                                         -- id: 7
+
+
+-- Giao dịch của Hiếu
+INSERT INTO Transactions (user_id, category_id, type, amount, transaction_date, note) VALUES 
+(1, 1, N'Thu', 12000000, '2026-04-01', N'Lương tháng 3'),
+(1, 3, N'Chi', 45000, '2026-04-02', N'Bún bò Huế'),
+(1, 3, N'Chi', 35000, '2026-04-02', N'Cà phê sáng'),
+(1, 3, N'Chi', 100000, '2026-04-03', N'Ăn trưa'),
+(1, 1, N'Thu', 500000, '2026-04-05', N'Thưởng thêm');
+
+-- Giao dịch của Khôi
+INSERT INTO Transactions (user_id, category_id, type, amount, transaction_date, note) VALUES 
+(2, 4, N'Chi', 500000, '2026-04-01', N'Tiền điện'),
+(2, 4, N'Chi', 120000, '2026-04-02', N'Tiền nước'),
+(2, 4, N'Chi', 300000, '2026-04-03', N'Chi phí sinh hoạt'),
+(2, 4, N'Chi', 800000, '2026-04-04', N'Tiền điện tháng 3'),
+(2, 4, N'Chi', 150000, '2026-04-05', N'Tiền internet');
+
+-- Giao dịch của Sơn
+INSERT INTO Transactions (user_id, category_id, type, amount, transaction_date, note) VALUES 
+(3, 1, N'Thu', 3000000, '2026-04-01', N'Kinh doanh Shopee'),
+(3, 4, N'Chi', 4000000, '2026-04-02', N'Thanh toán tiền nhà'),
+(3, 4, N'Chi', 500000, '2026-04-03', N'Sửa chữa nhà'),
+(3, 1, N'Thu', 2000000, '2026-04-04', N'Bán hàng thêm'),
+(3, 7, N'Chi', 25000, '2026-04-05', N'Chi phí nhỏ');
+
+-- Giao dịch của Anh
+INSERT INTO Transactions (user_id, category_id, type, amount, transaction_date, note) VALUES 
+(4, 4, N'Chi', 200000, '2026-04-01', N'Đổ xăng'),
+(4, 6, N'Chi', 300000, '2026-04-02', N'Giải trí'),
+(4, 4, N'Chi', 150000, '2026-04-03', N'Xăng xe'),
+(4, 6, N'Chi', 500000, '2026-04-04', N'Cafe bạn bè'),
+(4, 7, N'Chi', 250000, '2026-04-05', N'Đi lại');
+
+-- Giao dịch của Lộc
+INSERT INTO Transactions (user_id, category_id, type, amount, transaction_date, note) VALUES 
+(5, 1, N'Thu', 3000000, '2026-04-01', N'Thưởng đồ án'),
+(5, 3, N'Chi', 45000, '2026-04-02', N'Ăn sáng'),
+(5, 7, N'Chi', 850000, '2026-04-03', N'Học Java Web'),
+(5, 5, N'Chi', 1200000, '2026-04-04', N'Mua đồ'),
+(5, 3, N'Chi', 250000, '2026-04-05', N'Ăn liên hoan');
+GO
+
+-- ======================
+-- QUERY 
+-- ======================
+SELECT * FROM Users;
+SELECT * FROM Categories;
+SELECT * FROM Transactions;
+
+
+-- 1.  Kiểm tra toàn bộ giao dịch trong hệ thống
+SELECT 
+    T.transaction_id AS [ID],
+    U.username AS [Người dùng],
+    C.category_name AS [Hạng mục],
+    T.type AS [Loại GD], 
+    FORMAT(T.amount, 'N0') + ' VND' AS [Số tiền], 
+    FORMAT(T.transaction_date, 'dd/MM/yyyy HH:mm') AS [Thời gian],
+    T.note AS [Ghi chú]
+FROM Transactions T
+INNER JOIN Users U ON T.user_id = U.user_id
+INNER JOIN Categories C ON T.category_id = C.category_id
+ORDER BY T.transaction_date DESC;
+
+
+-- 2. Báo cáo cán cân tài chính
+SELECT 
+    U.username,
+    SUM(CASE WHEN T.type = N'Thu' THEN T.amount ELSE 0 END) AS [Tổng Thu],
+    SUM(CASE WHEN T.type = N'Chi' THEN T.amount ELSE 0 END) AS [Tổng Chi],
+    (SUM(CASE WHEN T.type = N'Thu' THEN T.amount ELSE 0 END) - 
+     SUM(CASE WHEN T.type = N'Chi' THEN T.amount ELSE 0 END)) AS [Số dư]
+FROM Transactions T
+JOIN Users U ON T.user_id = U.user_id
+GROUP BY U.username;
+
+
+-- 3. Top các khoản chi tiêu lớn nhất
+SELECT TOP 5 
+    U.username,
+    C.category_name,
+    T.amount,
+    T.note,
+    T.transaction_date
+FROM Transactions T
+JOIN Users U ON T.user_id = U.user_id
+JOIN Categories C ON T.category_id = C.category_id
+WHERE T.type = N'Chi' -- Đã sửa C.type thành T.type
+ORDER BY T.amount DESC;
+
+
+-- 4. Thống kê chi tiêu theo từng hạng mục
+SELECT 
+    C.category_name,
+    COUNT(T.transaction_id) AS [Số lần giao dịch],
+    SUM(T.amount) AS [Tổng tiền chi]
+FROM Transactions T
+JOIN Categories C ON T.category_id = C.category_id
+WHERE T.type = N'Chi' -- Đã sửa C.type thành T.type
+GROUP BY C.category_name
+ORDER BY [Tổng tiền chi] DESC;
+
+
+-- 5. Truy vấn giao dịch trong một khoảng thời gian
+DECLARE @StartDate DATETIME = '2026-04-01';
+DECLARE @EndDate DATETIME = '2026-04-05';
+
+SELECT * FROM Transactions 
+WHERE transaction_date BETWEEN @StartDate AND @EndDate
+ORDER BY transaction_date ASC;
+
+
+-- 6. Tìm kiếm theo từ khóa
+SELECT U.username, T.amount, T.note, T.transaction_date
+FROM Transactions T
+JOIN Users U ON T.user_id = U.user_id
+WHERE T.note LIKE N'%ăn%' 
+  AND T.note NOT LIKE N'%xăng%';
